@@ -125,7 +125,7 @@ final class NewsletterManager
 		$defaultConfig = [
 			'to' => $newsletter->getEmail(),
 			'subject' => 'Potvrzení odběru novinek',
-			'link' => rtrim(Url::get()->getBaseUrl(), '/') . '/' . $this->authUri. '/' . $newsletter->getHash(),
+			'link' => rtrim(Url::get()->getBaseUrl(), '/') . '/' . $this->authUri . '/' . $newsletter->getHash(),
 		];
 
 		$this->entityManager->flush($newsletter);
