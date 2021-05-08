@@ -39,8 +39,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 		?string $email = null,
 		?string $source = null,
 		?string $authorized = null
-	): void
-	{
+	): void {
 		$selection = $this->entityManager->getRepository(Newsletter::class)->createQueryBuilder('newsletter');
 
 		if ($email !== null) {
@@ -275,8 +274,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 		string $autoRemoveAuthorized,
 		string $autoRemoveUnAuthorized,
 		bool $autoRemoveActive = true
-	): void
-	{
+	): void {
 		try {
 			$this->newsletterManager->get()->setAutoRemoveAuthorized($autoRemoveAuthorized);
 			$this->newsletterManager->get()->setAutoRemoveUnAuthorized($autoRemoveUnAuthorized);
