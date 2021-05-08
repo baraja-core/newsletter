@@ -9,24 +9,23 @@ use Baraja\Doctrine\EntityManager;
 use Baraja\DynamicConfiguration\Configuration;
 use Baraja\Emailer\EmailerAccessor;
 use Baraja\Emailer\EmailerException;
+use Baraja\Newsletter\Email\NewsletterVerificationEmail;
+use Baraja\Newsletter\Entity\Newsletter;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Nette\Application\UI\InvalidLinkException;
 use Nette\Caching\Cache;
-use Nette\Caching\IStorage;
+use Nette\Caching\Storage;
 use Nette\Utils\DateTime;
-use Baraja\Newsletter\Email\NewsletterVerificationEmail;
-use Baraja\Newsletter\Entity\Newsletter;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
 final class NewsletterManager
 {
-	public const AUTO_REMOVE_AUTHORIZED_KEY = 'auto-remove--authorized';
-
-	public const AUTO_REMOVE_UNAUTHORIZED_KEY = 'auto-remove--un-authorized';
-
-	public const DEFAULT_REMOVE = 'should-remove-records';
+	public const
+		AUTO_REMOVE_AUTHORIZED_KEY = 'auto-remove--authorized',
+		AUTO_REMOVE_UNAUTHORIZED_KEY = 'auto-remove--un-authorized',
+		DEFAULT_REMOVE = 'should-remove-records';
 
 	private Cache $cache;
 
@@ -35,7 +34,7 @@ final class NewsletterManager
 		private EntityManager $entityManager,
 		private EmailerAccessor $emailer,
 		private Configuration $configuration,
-		IStorage $storage,
+		Storage $storage,
 	) {
 		$this->cache = new Cache($storage, 'newsletter');
 	}

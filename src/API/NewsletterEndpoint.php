@@ -7,6 +7,7 @@ namespace Baraja\Newsletter;
 
 use Baraja\Doctrine\EntityManager;
 use Baraja\DynamicConfiguration\Configuration;
+use Baraja\Newsletter\Entity\Newsletter;
 use Baraja\StructuredApi\BaseEndpoint;
 use Baraja\Url\Url;
 use Doctrine\ORM\NonUniqueResultException;
@@ -14,7 +15,6 @@ use Doctrine\ORM\NoResultException;
 use Nette\Http\Response;
 use Nette\Utils\DateTime;
 use Nette\Utils\Paginator;
-use Baraja\Newsletter\Entity\Newsletter;
 use Tracy\Debugger;
 use Tracy\ILogger;
 
@@ -39,7 +39,8 @@ final class NewsletterEndpoint extends BaseEndpoint
 		?string $email = null,
 		?string $source = null,
 		?string $authorized = null
-	): void {
+	): void
+	{
 		$selection = $this->entityManager->getRepository(Newsletter::class)->createQueryBuilder('newsletter');
 
 		if ($email !== null) {
@@ -274,7 +275,8 @@ final class NewsletterEndpoint extends BaseEndpoint
 		string $autoRemoveAuthorized,
 		string $autoRemoveUnAuthorized,
 		bool $autoRemoveActive = true
-	): void {
+	): void
+	{
 		try {
 			$this->newsletterManager->get()->setAutoRemoveAuthorized($autoRemoveAuthorized);
 			$this->newsletterManager->get()->setAutoRemoveUnAuthorized($autoRemoveUnAuthorized);

@@ -6,11 +6,11 @@ namespace Baraja\Newsletter\Entity;
 
 
 use Baraja\Doctrine\Identifier\IdentifierUnsigned;
+use Baraja\Newsletter\Helpers;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Nette\Utils\Random;
 use Nette\Utils\Validators;
-use Baraja\Newsletter\Helpers;
 
 /**
  * @ORM\Entity()
