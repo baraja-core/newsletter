@@ -13,29 +13,14 @@ use Tracy\ILogger;
 
 final class NewsletterAuthRoute
 {
-	public const ROUTE_PATH = 'newsletter-verification';
-
-	private static ?string $baseUri = null;
-
-
 	public function __construct(
-		private string $uri,
+		private string $authUri,
 		Request $request,
 		private NewsletterManagerAccessor $newsletterManager,
 	) {
-		if (preg_match('/^' . $uri . '\/([^\/]+)$/', $request->getUrl()->getPathInfo(), $parser)) {
+		if (preg_match('/^' . $authUri . '\/([^\/]+)$/', $request->getUrl()->getPathInfo(), $parser)) {
 			$this->actionDefault(trim($parser[1]));
 		}
-	}
-
-
-	public static function link(string $hash): string
-	{
-		if (self::$baseUri === null) {
-			throw new \RuntimeException('Base URI does not exist. Did you define Newsletter extension?');
-		}
-
-		return rtrim(Url::get()->getBaseUrl(), '/') . '/' . self::$baseUri . '/' . $hash;
 	}
 
 

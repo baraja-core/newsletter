@@ -11,6 +11,7 @@ use Baraja\Emailer\EmailerAccessor;
 use Baraja\Emailer\EmailerException;
 use Baraja\Newsletter\Email\NewsletterVerificationEmail;
 use Baraja\Newsletter\Entity\Newsletter;
+use Baraja\Url\Url;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Nette\Application\UI\InvalidLinkException;
@@ -31,6 +32,7 @@ final class NewsletterManager
 
 
 	public function __construct(
+		private string $authUri,
 		private EntityManager $entityManager,
 		private EmailerAccessor $emailer,
 		private Configuration $configuration,
@@ -123,7 +125,7 @@ final class NewsletterManager
 		$defaultConfig = [
 			'to' => $newsletter->getEmail(),
 			'subject' => 'Potvrzení odběru novinek',
-			'link' => NewsletterAuthRoute::link($newsletter->getHash()),
+			'link' => rtrim(Url::get()->getBaseUrl(), '/') . '/' . $this->authUri. '/' . $newsletter->getHash(),
 		];
 
 		$this->entityManager->flush($newsletter);

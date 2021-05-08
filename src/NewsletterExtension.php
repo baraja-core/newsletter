@@ -16,6 +16,9 @@ use Nette\PhpGenerator\ClassType;
 
 final class NewsletterExtension extends CompilerExtension
 {
+	public const ROUTE_PATH = 'newsletter-verification';
+
+
 	public function beforeCompile(): void
 	{
 		$builder = $this->getContainerBuilder();
@@ -28,14 +31,15 @@ final class NewsletterExtension extends CompilerExtension
 		if (PHP_SAPI !== 'cli') {
 			$builder->addDefinition($this->prefix('authRoute'))
 				->setFactory(NewsletterAuthRoute::class)
-				->setArgument('uri', 'newsletter-verification');
+				->setArgument('authUri', self::ROUTE_PATH);
 		}
 
 		$builder->addAccessorDefinition($this->prefix('managerAccessor'))
 			->setImplement(NewsletterManagerAccessor::class);
 
 		$builder->addDefinition($this->prefix('manager'))
-			->setFactory(NewsletterManager::class);
+			->setFactory(NewsletterManager::class)
+			->setArgument('authUri', self::ROUTE_PATH);
 
 		/** @var ServiceDefinition $pluginManager */
 		$pluginManager = $this->getContainerBuilder()->getDefinitionByType(PluginManager::class);
@@ -65,7 +69,7 @@ final class NewsletterExtension extends CompilerExtension
 			. "\n\t\t" . '$this->getByType(?);'
 			. "\n\t" . '};'
 			. "\n" . '}',
-			[NewsletterAuthRoute::ROUTE_PATH, \strlen(NewsletterAuthRoute::ROUTE_PATH), NewsletterAuthRoute::class],
+			[self::ROUTE_PATH, \strlen(self::ROUTE_PATH), NewsletterAuthRoute::class],
 		);
 	}
 }
