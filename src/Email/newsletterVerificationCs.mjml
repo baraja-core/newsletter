@@ -1,0 +1,13 @@
+<mjml>
+	<mj-body>
+		<mj-section>
+			<mj-column>
+				<mj-text>Dobrý den,</mj-text>
+
+				<mj-text>děkujeme za přihlášení k odběru novinek. Svůj souhlas, prosím, potvrďte kliknutím na následující odkaz:</mj-text>
+
+				<mj-text><a href="{$link}">Potvrdit odběr novinek</a></mj-text>
+			</mj-column>
+		</mj-section>
+	</mj-body>
+</mjml>

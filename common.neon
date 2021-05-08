@@ -1,0 +1,2 @@
+extensions:
+	newsletter: Baraja\Newsletter\NewsletterExtension
