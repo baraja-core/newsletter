@@ -90,7 +90,7 @@ final class NewsletterManager
 			$newsletter = new Newsletter($email, $source);
 			$this->entityManager->persist($newsletter);
 			$this->sendMail($newsletter, [], $mailClass);
-			$this->entityManager->flush($newsletter);
+			$this->entityManager->flush();
 		}
 
 		if ($this->isAutoRemoveActive() === true) {
@@ -128,7 +128,7 @@ final class NewsletterManager
 			'link' => rtrim(Url::get()->getBaseUrl(), '/') . '/' . $this->authUri . '/' . $newsletter->getHash(),
 		];
 
-		$this->entityManager->flush($newsletter);
+		$this->entityManager->flush();
 		$this->emailer->get()->getEmailServiceByType(
 			$serviceClass ?? NewsletterVerificationEmail::class,
 			array_merge($defaultConfig, $config),
@@ -147,7 +147,7 @@ final class NewsletterManager
 				$newsletter = new Newsletter($email, $source);
 				$newsletter->authorize();
 				$this->entityManager->persist($newsletter);
-				$this->entityManager->flush($newsletter);
+				$this->entityManager->flush();
 			} catch (\Throwable) {
 				// Silence is golden.
 			}
@@ -172,7 +172,7 @@ final class NewsletterManager
 		try {
 			if ($newsletter->isAuthorizedByUser() === false) {
 				$newsletter->authorize();
-				$this->entityManager->flush($newsletter);
+				$this->entityManager->flush();
 			}
 		} catch (\Throwable $e) {
 			Debugger::log($e, ILogger::CRITICAL);
@@ -187,7 +187,7 @@ final class NewsletterManager
 	{
 		$newsletter = $this->getNewsletterById($id);
 		$this->entityManager->remove($newsletter);
-		$this->entityManager->flush($newsletter);
+		$this->entityManager->flush();
 	}
 
 
@@ -212,7 +212,7 @@ final class NewsletterManager
 	{
 		$newsletter = $this->getNewsletterById($id);
 		$newsletter->cancel($message);
-		$this->entityManager->flush($newsletter);
+		$this->entityManager->flush();
 	}
 
 

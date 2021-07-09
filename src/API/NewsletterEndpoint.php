@@ -225,7 +225,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 			} else {
 				$newsletter->unAuthorize();
 			}
-			$this->entityManager->flush($newsletter);
+			$this->entityManager->flush();
 			$this->flashMessage('Contact was authorized.', 'success');
 		} catch (\Throwable $e) {
 			Debugger::log($e, ILogger::WARNING);
