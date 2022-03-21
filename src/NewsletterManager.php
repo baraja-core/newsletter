@@ -132,7 +132,7 @@ final class NewsletterManager
 		$this->emailer->get()->getEmailServiceByType(
 			$serviceClass ?? NewsletterVerificationEmail::class,
 			array_merge($defaultConfig, $config),
-			false
+			false,
 		)->send();
 	}
 

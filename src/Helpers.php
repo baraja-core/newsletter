@@ -28,9 +28,9 @@ final class Helpers
 			str_replace(
 				rtrim($httpRequest->getUrl()->withoutUserInfo()->getBaseUrl(), '/'),
 				'',
-				Url::get()->getCurrentUrl()
+				Url::get()->getCurrentUrl(),
 			),
-			'/'
+			'/',
 		);
 	}
 
@@ -89,7 +89,7 @@ final class Helpers
 			. "|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]"
 			. "|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\\])/i",
 			$haystack,
-			$matches
+			$matches,
 		);
 
 		if (isset($matches[0]) && \is_array($matches[0])) {

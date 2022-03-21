@@ -46,7 +46,7 @@ final class NewsletterAuthRoute
 				'ok' => $ok,
 				'errorMessage' => $error,
 				'homepageUrl' => Url::get()->getBaseUrl(),
-			]
+			],
 		);
 		die;
 	}

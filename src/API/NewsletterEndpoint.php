@@ -23,7 +23,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 	public function __construct(
 		private EntityManager $entityManager,
 		private NewsletterManagerAccessor $newsletterManager,
-		private Configuration $configuration
+		private Configuration $configuration,
 	) {
 	}
 
@@ -38,7 +38,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 		int $limit = 32,
 		?string $email = null,
 		?string $source = null,
-		?string $authorized = null
+		?string $authorized = null,
 	): void {
 		$selection = $this->entityManager->getRepository(Newsletter::class)->createQueryBuilder('newsletter');
 
@@ -91,7 +91,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 					return $authorizedByUser ? 'authorized' : 'disabled';
 				})(
 					$item['canceled'],
-					$item['authorizedByUser']
+					$item['authorizedByUser'],
 				),
 				'isActive' => $item['authorizedByUser'] === true && $item['canceled'] === false,
 				'authorizedDate' => $item['authorizedDate'],
@@ -112,7 +112,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 					->setItemCount($count)
 					->setItemsPerPage($limit)
 					->setPage($page),
-			]
+			],
 		);
 	}
 
@@ -159,7 +159,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 		$this->sendJson(
 			[
 				'emails' => $return,
-			]
+			],
 		);
 	}
 
@@ -205,7 +205,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 	{
 		try {
 			$this->newsletterManager->get()->sendMail(
-				$newsletter = $this->newsletterManager->get()->getNewsletterById($id)
+				$newsletter = $this->newsletterManager->get()->getNewsletterById($id),
 			);
 			$this->flashMessage('E-mail was sent to "' . $newsletter->getEmail() . '"', 'success');
 		} catch (\Throwable $e) {
@@ -265,7 +265,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 				'autoRemoveAuthorized' => $this->newsletterManager->get()->getAutoRemoveAuthorized(),
 				'autoRemoveUnAuthorized' => $this->newsletterManager->get()->getAutoRemoveUnAuthorized(),
 				'shouldRemoveRecords' => $this->newsletterManager->get()->isAutoRemoveActive(),
-			]
+			],
 		);
 	}
 
@@ -273,7 +273,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 	public function postSaveSettings(
 		string $autoRemoveAuthorized,
 		string $autoRemoveUnAuthorized,
-		bool $autoRemoveActive = true
+		bool $autoRemoveActive = true,
 	): void {
 		try {
 			$this->newsletterManager->get()->setAutoRemoveAuthorized($autoRemoveAuthorized);
@@ -315,7 +315,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 		$httpResponse->setHeader('Content-type', 'text/csv; charset=utf-8');
 		$httpResponse->setHeader(
 			'Content-Disposition',
-			'attachment; filename=' . $domain . '-newsletter-' . date('Y-m-d') . '.csv'
+			'attachment; filename=' . $domain . '-newsletter-' . date('Y-m-d') . '.csv',
 		);
 		$httpResponse->setHeader('Pragma', 'public');
 		$httpResponse->setHeader('Expires', '0');
@@ -332,8 +332,8 @@ final class NewsletterEndpoint extends BaseEndpoint
 						. $item['insertedDate'] . '";"'
 						. $item['source'] . '";"'
 						. ($item['active'] ? 'y' : 'n') . '"',
-					$returnValues
-				)
+					$returnValues,
+				),
 			);
 		die;
 	}
