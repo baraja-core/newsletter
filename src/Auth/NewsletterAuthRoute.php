@@ -14,11 +14,11 @@ use Tracy\ILogger;
 final class NewsletterAuthRoute
 {
 	public function __construct(
-		private string $authUri,
+		string $authUri,
 		Request $request,
 		private NewsletterManagerAccessor $newsletterManager,
 	) {
-		if (preg_match('/^' . $authUri . '\/([^\/]+)$/', $request->getUrl()->getPathInfo(), $parser)) {
+		if (preg_match('/^' . $authUri . '\/([^\/]+)$/', $request->getUrl()->getPathInfo(), $parser) === 1) {
 			$this->actionDefault(trim($parser[1]));
 		}
 	}

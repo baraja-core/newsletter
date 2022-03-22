@@ -35,38 +35,6 @@ final class Helpers
 	}
 
 
-	public static function userIp(): string
-	{
-		static $ip = null;
-
-		if ($ip === null) {
-			if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) { // Cloudflare support
-				$ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
-			} elseif (isset($_SERVER['REMOTE_ADDR']) === true) {
-				$ip = $_SERVER['REMOTE_ADDR'];
-				if ($ip === '127.0.0.1') {
-					if (isset($_SERVER['HTTP_X_REAL_IP'])) {
-						$ip = $_SERVER['HTTP_X_REAL_IP'];
-					} elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-						$ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-					}
-				}
-			} else {
-				$ip = '127.0.0.1';
-			}
-			if (in_array($ip, ['::1', '0.0.0.0', 'localhost'], true)) {
-				$ip = '127.0.0.1';
-			}
-			$filter = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
-			if ($filter === false) {
-				$ip = '127.0.0.1';
-			}
-		}
-
-		return $ip;
-	}
-
-
 	/**
 	 * This method parses a list of e-mail addresses from any text and returns them as fields.
 	 * In the text, e-mail addresses can be separated in any way: comma, semicolon, new line, only occupied in written text, ...

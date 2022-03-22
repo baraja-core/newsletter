@@ -6,7 +6,6 @@ namespace Baraja\Newsletter;
 
 
 use Baraja\Doctrine\EntityManager;
-use Baraja\DynamicConfiguration\Configuration;
 use Baraja\Newsletter\Entity\Newsletter;
 use Baraja\StructuredApi\BaseEndpoint;
 use Baraja\Url\Url;
@@ -23,7 +22,6 @@ final class NewsletterEndpoint extends BaseEndpoint
 	public function __construct(
 		private EntityManager $entityManager,
 		private NewsletterManagerAccessor $newsletterManager,
-		private Configuration $configuration,
 	) {
 	}
 
@@ -68,7 +66,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 			$count = 0;
 		}
 
-		/** @var mixed[][] $list */
+		/** @var array<int, array<string, mixed>> $list */
 		$list = $selection
 			->select('PARTIAL newsletter.{id, email, source, canceled, authorizedByUser, authorizedDate, insertedDate}')
 			->setMaxResults($limit)
@@ -167,16 +165,17 @@ final class NewsletterEndpoint extends BaseEndpoint
 	/**
 	 * Add contacts to database. If some contact already exist it will be skipped.
 	 *
-	 * @param string[] $emails
+	 * @param array<int, string> $emails
 	 */
 	public function postImport(array $emails, ?string $source = null): void
 	{
-		/** @var string[][] $databaseContacts */
+		$emails = array_unique($emails);
+		/** @var array<int, array{id: int, email: string}> $databaseContacts */
 		$databaseContacts = $this->entityManager->getRepository(Newsletter::class)
 			->createQueryBuilder('newsletter')
 			->select('PARTIAL newsletter.{id, email}')
 			->where('newsletter.email IN (:emails)')
-			->setParameter('emails', $emails = array_unique($emails))
+			->setParameter('emails', $emails)
 			->getQuery()
 			->getArrayResult();
 
@@ -190,7 +189,8 @@ final class NewsletterEndpoint extends BaseEndpoint
 			if (isset($used[$email]) === false) {
 				$this->entityManager->persist(new Newsletter($email, $source));
 				if (($counter++) >= 100) {
-					$this->entityManager->flush()->clear();
+					$this->entityManager->flush();
+					$this->entityManager->clear();
 					$counter = 0;
 				}
 			}
@@ -207,7 +207,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 			$this->newsletterManager->get()->sendMail(
 				$newsletter = $this->newsletterManager->get()->getNewsletterById($id),
 			);
-			$this->flashMessage('E-mail was sent to "' . $newsletter->getEmail() . '"', 'success');
+			$this->flashMessage(sprintf('E-mail was sent to "%s".', $newsletter->getEmail()), 'success');
 		} catch (\Throwable $e) {
 			Debugger::log($e, ILogger::WARNING);
 			$this->sendError('Can not sent email.');

@@ -43,7 +43,7 @@ final class NewsletterManager
 
 
 	/**
-	 * @return Newsletter[]
+	 * @return array<int, Newsletter>
 	 */
 	public function getList(int $limit = 128, int $offset = 0): array
 	{
@@ -63,7 +63,7 @@ final class NewsletterManager
 	 */
 	public function getSourceTypes(): array
 	{
-		/** @var string[][] $results */
+		/** @var array<int, array{source: string|null}> $results */
 		$results = $this->entityManager->getRepository(Newsletter::class)
 			->createQueryBuilder('newsletter')
 			->select('DISTINCT newsletter.source')
@@ -72,7 +72,8 @@ final class NewsletterManager
 
 		$return = [];
 		foreach ($results as $result) {
-			$return[$result['source'] ?: '--null--'] = $result['source'] ?: '(unknown)';
+			$source = (string) $result['source'];
+			$return[$source !== '' ? $source : '--null--'] = $source !== '' ? $source : '(unknown)';
 		}
 
 		return $return;
@@ -116,8 +117,8 @@ final class NewsletterManager
 
 
 	/**
-	 * @param mixed[] $config
-	 * @param string|null $serviceClass implements \Baraja\Emailer\Message\Email
+	 * @param array<string, mixed> $config
+	 * @param class-string|null $serviceClass implements \Baraja\Emailer\Message\Email
 	 * @throws EmailerException
 	 */
 	public function sendMail(Newsletter $newsletter, array $config = [], ?string $serviceClass = null): void
@@ -125,7 +126,7 @@ final class NewsletterManager
 		$defaultConfig = [
 			'to' => $newsletter->getEmail(),
 			'subject' => 'Potvrzení odběru novinek',
-			'link' => rtrim(Url::get()->getBaseUrl(), '/') . '/' . $this->authUri . '/' . $newsletter->getHash(),
+			'link' => sprintf('%s/%s/%s', rtrim(Url::get()->getBaseUrl(), '/'), $this->authUri, $newsletter->getHash()),
 		];
 
 		$this->entityManager->flush();
@@ -138,7 +139,7 @@ final class NewsletterManager
 
 
 	/**
-	 * @param string[] $emails
+	 * @param array<int, string> $emails
 	 */
 	public function bulkRegister(array $emails, ?string $source = null): void
 	{
@@ -160,7 +161,6 @@ final class NewsletterManager
 	 */
 	public function authByHash(string $hash): void
 	{
-		/** @var Newsletter $newsletter */
 		$newsletter = $this->entityManager->getRepository(Newsletter::class)
 			->createQueryBuilder('newsletter')
 			->select('newsletter')
@@ -168,6 +168,7 @@ final class NewsletterManager
 			->setParameter('hash', $hash)
 			->getQuery()
 			->getSingleResult();
+		assert($newsletter instanceof Newsletter);
 
 		try {
 			if ($newsletter->isAuthorizedByUser() === false) {
@@ -223,7 +224,7 @@ final class NewsletterManager
 	{
 		$data = $this->cache->load($hash);
 		if (\is_array($data)) {
-			/** @var Newsletter[] $databaseContacts */
+			/** @var array<int, Newsletter> $databaseContacts */
 			$databaseContacts = $this->entityManager->getRepository(Newsletter::class)
 				->createQueryBuilder('newsletter')
 				->where('newsletter.email IN (:ids)')
@@ -270,7 +271,8 @@ final class NewsletterManager
 	{
 		$haystack = $this->configuration->get(self::AUTO_REMOVE_AUTHORIZED_KEY, 'newsletter');
 		if ($haystack === null) {
-			$this->setAutoRemoveAuthorized($haystack = '99 years');
+			$haystack = '99 years';
+			$this->setAutoRemoveAuthorized($haystack);
 		}
 
 		return $haystack;
@@ -281,7 +283,8 @@ final class NewsletterManager
 	{
 		$haystack = $this->configuration->get(self::AUTO_REMOVE_UNAUTHORIZED_KEY, 'newsletter');
 		if ($haystack === null) {
-			$this->setAutoRemoveUnAuthorized($haystack = '14 days');
+			$haystack = '14 days';
+			$this->setAutoRemoveUnAuthorized($haystack);
 		}
 
 		return $haystack;
@@ -292,8 +295,8 @@ final class NewsletterManager
 	{
 		$haystack = $this->configuration->get(self::DEFAULT_REMOVE, 'newsletter');
 		if ($haystack === null) {
-			$this->setAutoRemoveActive(true);
 			$haystack = 'true';
+			$this->setAutoRemoveActive();
 		}
 
 		return $haystack === 'true';
@@ -311,7 +314,7 @@ final class NewsletterManager
 		$haystack = trim($haystack);
 		if (strtotime('now + ' . $haystack) === false) {
 			throw new \InvalidArgumentException(
-				'Date "' . $haystack . '" is not in valid format. Did you mean "14 days" for instance?',
+				sprintf('Date "%s" is not in valid format. Did you mean "14 days" for instance?', $haystack),
 			);
 		}
 
@@ -324,7 +327,7 @@ final class NewsletterManager
 		$haystack = trim($haystack);
 		if (strtotime('now + ' . $haystack) === false) {
 			throw new \InvalidArgumentException(
-				'Date "' . $haystack . '" is not in valid format. Did you mean "14 days" for instance?',
+				sprintf('Date "%s" is not in valid format. Did you mean "14 days" for instance?', $haystack),
 			);
 		}
 

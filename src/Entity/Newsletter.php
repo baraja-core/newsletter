@@ -6,7 +6,7 @@ namespace Baraja\Newsletter\Entity;
 
 
 use Baraja\Doctrine\Identifier\IdentifierUnsigned;
-use Baraja\Newsletter\Helpers;
+use Baraja\Network\Ip;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Index;
 use Nette\Utils\Random;
@@ -69,7 +69,7 @@ class Newsletter
 		}
 
 		$this->email = $email;
-		$this->ip = Helpers::userIp();
+		$this->ip = Ip::get();
 		$this->hash = Random::generate(16);
 		$this->source = $source === null ? null : mb_substr($source, 0, 32, 'UTF-8');
 		$this->insertedDate = new \DateTime('now');
@@ -83,7 +83,7 @@ class Newsletter
 		$this->canceled = false;
 		$this->cancelDate = null;
 		if ($this->ip === null) {
-			$this->ip = Helpers::userIp();
+			$this->ip = Ip::get();
 		}
 	}
 
