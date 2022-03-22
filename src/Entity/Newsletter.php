@@ -5,57 +5,52 @@ declare(strict_types=1);
 namespace Baraja\Newsletter\Entity;
 
 
-use Baraja\Doctrine\Identifier\IdentifierUnsigned;
 use Baraja\Network\Ip;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Index;
 use Nette\Utils\Random;
 use Nette\Utils\Validators;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(
- *    name="core__newsletter",
- *    indexes={
- *       @Index(name="core__newsletter__source", columns={"source"}),
- *       @Index(name="core__newsletter__canceled", columns={"canceled"}),
- *       @Index(name="core__newsletter__authorized_by_user", columns={"authorized_by_user"})
- *    }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'core__newsletter')]
+#[ORM\Index(columns: ['source'], name: 'core__newsletter__source')]
+#[ORM\Index(columns: ['canceled'], name: 'core__newsletter__canceled')]
+#[ORM\Index(columns: ['authorized_by_user'], name: 'core__newsletter__authorized_by_user')]
 class Newsletter
 {
-	use IdentifierUnsigned;
+	#[ORM\Id]
+	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]
+	#[ORM\GeneratedValue]
+	protected int $id;
 
-	/** @ORM\Column(type="string", length=128, unique=true) */
+	#[ORM\Column(type: 'string', length: 128, unique: true)]
 	private string $email;
 
-	/** @ORM\Column(type="string", length=16, unique=true) */
+	#[ORM\Column(type: 'string', length: 16, unique: true)]
 	private string $hash;
 
-	/** @ORM\Column(type="string", nullable=true) */
+	#[ORM\Column(type: 'string', nullable: true)]
 	private ?string $ip = null;
 
-	/** @ORM\Column(type="boolean") */
+	#[ORM\Column(type: 'boolean')]
 	private bool $authorizedByUser = false;
 
-	/** @ORM\Column(type="boolean") */
+	#[ORM\Column(type: 'boolean')]
 	private bool $canceled = false;
 
-	/** @ORM\Column(type="string", nullable=true) */
+	#[ORM\Column(type: 'string', nullable: true)]
 	private ?string $cancelMessage = null;
 
-	/** @ORM\Column(type="string", length=32, nullable=true) */
+	#[ORM\Column(type: 'string', length: 32, nullable: true)]
 	private ?string $source = null;
 
-	/** @ORM\Column(type="datetime", nullable=true) */
-	private ?\DateTime $authorizedDate = null;
+	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
+	private ?\DateTimeImmutable $authorizedDate = null;
 
-	/** @ORM\Column(type="datetime", nullable=true) */
-	private ?\DateTime $cancelDate = null;
+	#[ORM\Column(type: 'datetime_immutable', nullable: true)]
+	private ?\DateTimeImmutable $cancelDate = null;
 
-	/** @ORM\Column(type="datetime") */
-	private \DateTime $insertedDate;
+	#[ORM\Column(type: 'datetime_immutable')]
+	private \DateTimeImmutable $insertedDate;
 
 
 	public function __construct(string $email, ?string $source = null)
@@ -72,14 +67,20 @@ class Newsletter
 		$this->ip = Ip::get();
 		$this->hash = Random::generate(16);
 		$this->source = $source === null ? null : mb_substr($source, 0, 32, 'UTF-8');
-		$this->insertedDate = new \DateTime('now');
+		$this->insertedDate = new \DateTimeImmutable('now');
+	}
+
+
+	public function getId(): int
+	{
+		return $this->id;
 	}
 
 
 	public function authorize(): void
 	{
 		$this->authorizedByUser = true;
-		$this->authorizedDate = new \DateTime('now');
+		$this->authorizedDate = new \DateTimeImmutable('now');
 		$this->canceled = false;
 		$this->cancelDate = null;
 		if ($this->ip === null) {
@@ -110,7 +111,7 @@ class Newsletter
 	{
 		$this->canceled = true;
 		$this->cancelMessage = $message;
-		$this->cancelDate = new \DateTime('now');
+		$this->cancelDate = new \DateTimeImmutable('now');
 	}
 
 
@@ -162,13 +163,13 @@ class Newsletter
 	}
 
 
-	public function getCancelDate(): ?\DateTime
+	public function getCancelDate(): ?\DateTimeImmutable
 	{
 		return $this->cancelDate;
 	}
 
 
-	public function setCancelDate(?\DateTime $cancelDate): void
+	public function setCancelDate(?\DateTimeImmutable $cancelDate): void
 	{
 		$this->cancelDate = $cancelDate;
 	}
@@ -180,13 +181,13 @@ class Newsletter
 	}
 
 
-	public function getAuthorizedDate(): ?\DateTime
+	public function getAuthorizedDate(): ?\DateTimeImmutable
 	{
 		return $this->authorizedDate;
 	}
 
 
-	public function getInsertedDate(): \DateTime
+	public function getInsertedDate(): \DateTimeImmutable
 	{
 		return $this->insertedDate;
 	}
