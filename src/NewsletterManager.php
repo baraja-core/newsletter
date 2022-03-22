@@ -73,7 +73,9 @@ final class NewsletterManager
 		$return = [];
 		foreach ($results as $result) {
 			$source = (string) $result['source'];
-			$return[$source !== '' ? $source : '--null--'] = $source !== '' ? $source : '(unknown)';
+			$key = $source !== '' ? $source : '--null--';
+			$value = $source !== '' ? $source : '(unknown)';
+			$return[$key] = $value;
 		}
 
 		return $return;
@@ -81,6 +83,7 @@ final class NewsletterManager
 
 
 	/**
+	 * @param class-string|null $mailClass
 	 * @throws EmailerException|InvalidLinkException
 	 */
 	public function register(string $email, ?string $source = null, ?string $mailClass = null): void
