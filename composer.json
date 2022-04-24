@@ -15,7 +15,7 @@
 		"nette/utils": "^3.0",
 		"baraja-core/doctrine": "^3.0",
 		"baraja-core/localization": "^2.0",
-		"baraja-core/structured-api": "^3.0",
+		"baraja-core/structured-api": "^3.4",
 		"baraja-core/emailer": "^1.0",
 		"baraja-core/plugin-system": "^2.0",
 		"baraja-core/url": "^1.1",

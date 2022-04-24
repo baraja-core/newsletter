@@ -263,7 +263,8 @@ final class NewsletterManager
 	public function unregisterByEmail(string $email): void
 	{
 		try {
-			$this->entityManager->remove($this->getNewsletterByEmail($email))->flush();
+			$this->entityManager->remove($this->getNewsletterByEmail($email));
+			$this->entityManager->flush();
 		} catch (NoResultException | NonUniqueResultException) {
 			// Silence is golden.
 		}
