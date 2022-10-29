@@ -22,6 +22,7 @@ final class NewsletterEndpoint extends BaseEndpoint
 	public function __construct(
 		private EntityManager $entityManager,
 		private NewsletterManagerAccessor $newsletterManager,
+		private Response $response,
 	) {
 	}
 
@@ -309,19 +310,20 @@ final class NewsletterEndpoint extends BaseEndpoint
 			];
 		}
 
-		$domain = Url::get()->getNetteUrl()->getDomain(3);
-		/** @var Response $httpResponse */
-		$httpResponse = $this->container->getByType(Response::class);
-		$httpResponse->setHeader('Content-type', 'text/csv; charset=utf-8');
-		$httpResponse->setHeader(
+		$this->response->setHeader('Content-type', 'text/csv; charset=utf-8');
+		$this->response->setHeader(
 			'Content-Disposition',
-			'attachment; filename=' . $domain . '-newsletter-' . date('Y-m-d') . '.csv',
+			sprintf(
+				'attachment; filename=%s-newsletter-%s.csv',
+				Url::get()->getNetteUrl()->getDomain(3),
+				date('Y-m-d'),
+			),
 		);
-		$httpResponse->setHeader('Pragma', 'public');
-		$httpResponse->setHeader('Expires', '0');
-		$httpResponse->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
-		$httpResponse->setHeader('Content-Transfer-Encoding', 'binary');
-		$httpResponse->setHeader('Content-Description', 'File Transfer');
+		$this->response->setHeader('Pragma', 'public');
+		$this->response->setHeader('Expires', '0');
+		$this->response->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+		$this->response->setHeader('Content-Transfer-Encoding', 'binary');
+		$this->response->setHeader('Content-Description', 'File Transfer');
 
 		echo '"E-mail";"Authorized Date";"Inserted Date";"Source";"Active"' . "\n"
 			. implode(
